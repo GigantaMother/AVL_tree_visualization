@@ -6,7 +6,7 @@ node	*tree = NULL;
 //==================================================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ДЕРЕВА =====================================================================
 //=============================================================================================================================================================
 // Считает кол-во элементов в дереве
-int size(node *tree)
+int	size(node *tree)
 {
 	int s = 0;
 
@@ -14,168 +14,202 @@ int size(node *tree)
 		return (0);
 	s++;
 
-	s += size(tree->l);
-	s += size(tree->r);
+	s += size(tree->left);
+	s += size(tree->right);
 
 	return (s);
 }
 
 // Считает глубину дерева
-int depth(node *tree)
+int	depth(node *tree)
 {
 	if (tree == NULL)
 		return (0);
 
-	int leftDepth = depth(tree->l);
-	int rightDepth = depth(tree->r);
+	int leftDepth = depth(tree->left);
+	int rightDepth = depth(tree->right);
 
 	return (leftDepth > rightDepth ? leftDepth + 1 : rightDepth + 1);
 }
 
-//=============================================================================================================================================================
-
-unsigned char height(node* p)
+unsigned char	height(node* p)
 {
-	return p?p->height:0;
+	return (p ? p->height : 0);
 }
 
-int bfactor(node* p)
+int	bfactor(node* p)
 {
-	return height(p->r)-height(p->l);
+	return (height(p->right) - height(p->left));
 }
 
-void fixheight(node* p)
+void	fixheight(node* p)
 {
-	unsigned char hl = height(p->l);
-	unsigned char hr = height(p->r);
-	p->height = (hl>hr?hl:hr)+1;
+	unsigned char hl = height(p->left);
+	unsigned char hr = height(p->right);
+
+	p->height = (hl > hr ? hl : hr) + 1;
 }
 
-node* rotateright(node* p) // правый поворот вокруг p
+// правый поворот вокруг p
+node*	rotateright(node* p)
 {
-	node* q = p->l;
-	p->l = q->r;
-	q->r = p;
+	node* q = p->left;
+
+	p->left->parent = p->parent;
+	p->parent = p->left;
+	if (p->left->right)
+		p->left->right->parent = p;
+
+	p->left = q->right;
+	q->right = p;
+
 	fixheight(p);
 	fixheight(q);
-	return q;
+	return (q);
 }
 
-node* rotateleft(node* q) // левый поворот вокруг q
+// левый поворот вокруг q
+node*	rotateleft(node* q)
 {
-	node* p = q->r;
-	q->r = p->l;
-	p->l = q;
+	node* p = q->right;
+
+	q->right->parent = q->parent;
+	q->parent = q->right;
+	if (q->right->left)
+		q->right->left->parent = q;
+
+	q->right = p->left;
+	p->left = q;
+
 	fixheight(q);
 	fixheight(p);
-	return p;
+
+	return (p);
 }
 
-node* balance(node* p) // балансировка узла p
+// балансировка узла p
+node*	balance(node* p)
 {
 	fixheight(p);
-	if( bfactor(p)==2 )
+	if( bfactor(p)== 2)
 	{
-		cout << "ЛЕВО\n";
-		if( bfactor(p->r) < 0 )
-			p->r = rotateright(p->r);
+		if( bfactor(p->right) < 0 )
+			p->right = rotateright(p->right);
 		return rotateleft(p);
 	}
 	if( bfactor(p)==-2 )
 	{
-		cout << "ПРАВО\n";
-		if( bfactor(p->l) > 0 )
-			p->l = rotateleft(p->l);
+		if( bfactor(p->left) > 0)
+			p->left = rotateleft(p->left);
 		return rotateright(p);
 	}
-	return p; // балансировка не нужна
+	return p;
 }
 
-node* insert(node* p, int k) // вставка ключа k в дерево с корнем p
+// вставка ключа k в дерево с корнем p
+node*	insert(node *p, int k, node *parent)
 {
 	if(!p)
-		return new node(k);
+		return new node(k, parent);
 	if( k < p->info)
-		p->l = insert(p->l, k);
+		p->left = insert(p->left, k, p);
+	else if (k > p->info)
+		p->right = insert(p->right, k, p);
 	else
-		p->r = insert(p->r, k);
+		cout << "Элемент есть\n";
+
 	return balance(p);
 }
 
-node* findmin(node* p) // поиск узла с минимальным ключом в дереве p 
+// поиск узла с минимальным ключом в дереве p 
+node*	findmin(node* p)
 {
-	return p->l ? findmin(p->l) : p;
+	return (p->left ? findmin(p->left) : p);
 }
 
-node* removemin(node* p) // удаление узла с минимальным ключом из дерева p
+// удаление узла с минимальным ключом из дерева p
+node*	removemin(node* p)
 {
-	if( p->l == 0)
-		return p->r;
-	p->l = removemin(p->l);
-	return balance(p);
-}
-
-node* remove(node* p, int k) // удаление ключа k из дерева p
-{
-	if( !p ) return 0;
-	if( k < p->info )
-		p->l = remove(p->l ,k);
-	else if( k > p->info )
-		p->r = remove(p->r, k);	
-	else //  k == p->key 
+	if( p->left == 0)
 	{
-		node* q = p->l;
-		node* r = p->r;
-		delete p;
-		if( !r ) return q;
-		node* min = findmin(r);
-		min->r = removemin(r);
-		min->l = q;
-		return balance(min);
+		if (p->right)
+			p->right->parent = p->parent;
+		return (p->right);
 	}
-	return balance(p);
+	p->left = removemin(p->left);
+	return (balance(p));
+}
+
+// удаление ключа k из дерева p
+node* remove(node* p, int k)
+{
+	if(!p)
+		return (0);
+	if( k < p->info )
+		p->left = remove(p->left ,k);
+	else if( k > p->info )
+		p->right = remove(p->right, k);	
+	else
+	{
+		node*	q = p->left;
+		node*	r = p->right;
+		node*	temp_parent = p->parent;
+
+		delete p;
+		if(!r)
+		{
+			if (q)
+				q->parent = p->parent;
+			return q;
+		}
+
+		node* min = findmin(r);
+
+		min->right = removemin(r);
+		if (min->right)
+			min->right->parent = min;
+
+		min->left = q;
+		if (min->left)
+			min->left->parent = min;
+
+		min->parent = temp_parent;
+
+		return (balance(min));
+	}
+	return (balance(p));
 }
 //=============================================================================================================================================================
 //================================================================ БЛОК С ТЕСТОМ ==============================================================================
 //=============================================================================================================================================================
 
-int	main ()
+void	test_cycle()
 {
 	string	str_test;
-	int		rand_elem = 0;
+	int		rand_elem = 0, int_mod = 0, delay = 300000;
 
 	srand(time(NULL));
 	
-	// for (size_t i = 0; i < 1000 ; i++)
-	// {
-	// 	clear();
-	// 	cout << "=======================" << endl;
-	// 	print_tree(tree, 1);
+	while (42)
+	{
+		// Вставим рандомный элемент
+		rand_elem = rand() % 999;
+		tree = insert(tree, rand_elem, tree);
+		// Удалим рандомный элемент
+		rand_elem = rand() % 999;
+		tree = remove(tree, rand_elem);
+		// Напечатаем дерево
+		print_tree(tree, 0);
+		// Подождём, что бы пользователь успел увидеть изменения
+		usleep(delay);
+		//getline(cin, str_test);
+		clear();
+	}
+}
 
-	// 	//rand_elem = rand() % 1000;
-	// 	cout << "Введите число\n";
-	// 	cin >> rand_elem;
-	// 	tree = insert(tree, rand_elem);
-	// }
-	tree = insert(tree, 40);
-	tree = insert(tree, 30);
-	tree = insert(tree, 60);
-	tree = insert(tree, 100);
-	tree = insert(tree, 50);
-	tree = insert(tree, 150);
-	tree = insert(tree, 149);
-	tree = insert(tree, 151);
-	tree = insert(tree, 10);
-	tree = insert(tree, 5);
-	tree = insert(tree, 12);
-	tree = insert(tree, 65);
-
-	print_tree(tree, 1);
-	cout << "pam pam" << endl;
-	tree = remove(tree, 60);
-
-	print_tree(tree, 1);
-
+int	main ()
+{
+	test_cycle();
 
 	return (0);
 }

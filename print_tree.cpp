@@ -31,7 +31,7 @@ void fill_depth(node *tree, std::string *lev_tree, std::string *lev_tree_height,
 	if (tree == NULL)
 		return ;
 
-	int		d = depth(tree), skip_pred = pow(2, d - 1) - 2, arm = pow(2, d - 1);
+	int		d = d = depth(tree), skip_pred = pow(2, d - 1) - 2, arm = pow(2, d - 1);
 	string	num_str = print_num(tree->info, '0'), height_str;
 
 	if (mod == -1)
@@ -40,28 +40,28 @@ void fill_depth(node *tree, std::string *lev_tree, std::string *lev_tree_height,
 	if (mod_h == 1)
 		height_str = print_num(tree->height, '.');
 	else if (mod_h == 2)
-		height_str = print_num(tree->height, ' ');
+		height_str = print_num(tree->parent ? tree->parent->info : 0, '.');
 	
 	lev_tree[lev].replace(mod, 3, num_str);
 	if (mod_h)
 		lev_tree_height[lev].replace(mod, 3, height_str);
 
 	lev++;
-	if (tree->l != NULL)
+	if (tree->left != NULL)
 	{
 		if (mod_h)
 			lev_tree_height[lev - 1].replace(mod - arm, arm, arm, '_');
 		else
 			lev_tree[lev - 1].replace(mod - arm, arm, arm, '_');
-		fill_depth(tree->l, lev_tree, lev_tree_height, lev, mod - skip_pred - 2, mod_h);
+		fill_depth(tree->left, lev_tree, lev_tree_height, lev, mod - skip_pred - 2, mod_h);
 	}
-	if (tree->r != NULL)
+	if (tree->right != NULL)
 	{
 		if (mod_h)
 			lev_tree_height[lev - 1].replace(mod + 3, arm, arm, '_');
 		else
 			lev_tree[lev - 1].replace(mod + 3, arm, arm, '_');
-		fill_depth(tree->r, lev_tree, lev_tree_height, lev, mod + skip_pred + 2, mod_h);
+		fill_depth(tree->right, lev_tree, lev_tree_height, lev, mod + skip_pred + 2, mod_h);
 	}
 }
 
@@ -148,4 +148,42 @@ void print_tree(node *tree, int mod_h)
 	}
 
 	std::cout << "\nTime: " << (float)(clock() - time_tree) / (float)1000000 << " c" << endl;
+	rez_check_parent(check_parent(tree));
+}
+
+// Проверяет родителей (правильно ли они поменялись при балансировке)
+int	check_parent(node *tree)
+{
+	int rez = 0;
+
+	if (tree == NULL)
+		return (0);
+	if (tree->left != NULL)
+	{
+		if (tree->left->parent != tree)
+			rez++;
+		else
+			rez += check_parent(tree->left);
+	}
+	if (tree->right != NULL)
+	{
+		if (tree->right->parent != tree)
+			rez++;
+		else
+			rez += check_parent(tree->right);
+	}
+	return (rez);
+}
+
+// Если родители были поменены неверно, то программа завершится 
+void	rez_check_parent(int t)
+{
+	cout << "parents: ";
+	if (!t)
+		cout << "OK\n";
+	else
+	{
+		cout << "KO KO KO KO KO KO KO KO \n";
+		exit(0);
+	}
 }
