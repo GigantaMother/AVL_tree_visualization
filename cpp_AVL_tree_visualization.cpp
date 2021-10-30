@@ -182,7 +182,7 @@ node* remove(node* p, int k)
 void	test_automatically(node	*tree, int mod_time, int mod_step, int mod_print)
 {
 	string	str_test;
-	int		rand_elem = 0, int_mod = 0, step = 1, delay = 100000;
+	int		rand_elem = 0, int_mod = 0, step = 1, delay = 300000;
 
 	srand(time(NULL));
 	clear();
