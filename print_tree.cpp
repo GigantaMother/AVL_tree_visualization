@@ -118,7 +118,7 @@ void print_tree(node *tree, int mod_h)
 	int		time_tree = clock(), d = depth(tree), s = size(tree), skip = (pow(2, d) - 2) * 2 + 3;
 	string	lev_tree[d], lev_tree_height[d];
 
-	cout << "Tree buf\n" << "d= " << d << endl << "s= " << s << endl;
+	cout << "Tree\n" << "d= " << d << endl << "s= " << s << endl;
 	// cout << "skip(max)= " << skip << endl;
 	cout << "Заполненно: " << (float)s/(float)(pow(2, d) - 1) * 100 << "%" << endl;
 
@@ -150,7 +150,7 @@ void print_tree(node *tree, int mod_h)
 	}
 
 	std::cout << "\nTime: " << (float)(clock() - time_tree) / (float)1000000 << " c" << endl;
-	rez_check_parent(check_parent(tree));
+	//rez_check_parent(check_parent(tree));
 }
 
 // Проверяет родителей (правильно ли они поменялись при балансировке)
