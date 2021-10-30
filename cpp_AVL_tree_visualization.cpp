@@ -1,6 +1,7 @@
 #include "tree.hpp"
 
 node	*tree = NULL;
+node	*tree_copy = NULL;
 
 //=============================================================================================================================================================
 //==================================================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ДЕРЕВА =====================================================================
@@ -205,6 +206,19 @@ void	test_cycle()
 		//getline(cin, str_test);
 		clear();
 	}
+}
+
+node*	copy(node* tree)
+{
+	if (tree == NULL)
+		return (NULL);
+
+	node* tree_copy = new node(tree->info, tree->parent);
+	tree_copy->left = copy(tree->left);
+	tree_copy->right = copy(tree->right);
+	tree_copy->height = height(tree);
+	
+	return (tree_copy);
 }
 
 int	main ()

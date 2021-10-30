@@ -160,15 +160,21 @@ int	check_parent(node *tree)
 		return (0);
 	if (tree->left != NULL)
 	{
-		if (tree->left->parent != tree)
+		if (tree->left->parent->info != tree->info)
+		{
+			cout << tree->left->parent->info << " != " << tree->info << endl;
 			rez++;
+		}
 		else
 			rez += check_parent(tree->left);
 	}
 	if (tree->right != NULL)
 	{
-		if (tree->right->parent != tree)
+		if (tree->right->parent->info != tree->info)
+		{
+			cout << tree->right->parent->info << " != " << tree->info << endl;
 			rez++;
+		}
 		else
 			rez += check_parent(tree->right);
 	}
