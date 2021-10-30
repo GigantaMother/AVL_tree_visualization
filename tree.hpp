@@ -27,7 +27,7 @@ int				depth(node *tree);
 // print_tree.cpp
 std::string		print_num(int num, char ch);
 void			fill_depth(node *tree, std::string *lev_tree, std::string *lev_tree_height, int lev, int mod, int mod_h);
-void			delete_columns(string	*lev_tree, string *lev_tree_height, int skip, int d, int mod_h);
+void			delete_columns(string *lev_tree, string *lev_tree_height, int skip, int d, int mod_h);
 void			print_tree(node *tree, int mod_h = 0);
 int				check_parent(node *tree);
 void			rez_check_parent(int t);
