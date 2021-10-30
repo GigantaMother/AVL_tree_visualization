@@ -1,8 +1,5 @@
 #include "tree.hpp"
 
-node	*tree = NULL;
-node	*tree_copy = NULL;
-
 //=============================================================================================================================================================
 //==================================================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ДЕРЕВА =====================================================================
 //=============================================================================================================================================================
@@ -112,12 +109,10 @@ node*	insert(node *p, int k, node *parent)
 {
 	if(!p)
 		return new node(k, parent);
-	if( k < p->info)
+	if( k <= p->info)
 		p->left = insert(p->left, k, p);
-	else if (k > p->info)
-		p->right = insert(p->right, k, p);
 	else
-		cout << "Элемент есть\n";
+		p->right = insert(p->right, k, p);
 
 	return balance(p);
 }
@@ -183,31 +178,111 @@ node* remove(node* p, int k)
 //=============================================================================================================================================================
 //================================================================ БЛОК С ТЕСТОМ ==============================================================================
 //=============================================================================================================================================================
-
-void	test_cycle()
+// добавление/удаление случайныx элементов
+void	test_automatically(node	*tree, int mod_time, int mod_step, int mod_print)
 {
 	string	str_test;
-	int		rand_elem = 0, int_mod = 0, delay = 300000;
+	int		rand_elem = 0, int_mod = 0, step = 1, delay = 100000;
 
 	srand(time(NULL));
+	clear();
 	
-	while (42)
+	while (step)
 	{
-		// Вставим рандомный элемент
+		if (mod_step)
+		{
+			cout << "============================================================ДО============================================================" << endl;
+			print_tree(tree, mod_print);
+			cout << "============================================================ПОСЛЕ============================================================" << endl;
+		}
 		rand_elem = rand() % 999;
-		tree = insert(tree, rand_elem, tree);
-		// Удалим рандомный элемент
-		rand_elem = rand() % 999;
-		tree = remove(tree, rand_elem);
-		// Напечатаем дерево
-		print_tree(tree, 0);
-		// Подождём, что бы пользователь успел увидеть изменения
-		usleep(delay);
-		//getline(cin, str_test);
+		if (step % 2 == 1)
+		{
+			cout << "Вставляем: " << rand_elem << endl;
+			tree = insert(tree, rand_elem, tree);
+		}
+		else
+		{
+			cout << "Удаляем: " << rand_elem << endl;
+			tree = remove(tree, rand_elem);
+		}
+		print_tree(tree, mod_print);
+		if (mod_time == 0)
+			usleep(delay);
+		else
+			getline(cin, str_test);
 		clear();
+		step++;
 	}
 }
 
+// Парсер введённого числа
+int	parcer_num(string str)
+{
+	int num = 0, i = 0;
+
+	if (str.length() == 0 || (str.length() == 1 && str[0] == '+'))
+		return (-1);
+	if (str[0] == '+')
+		i++;
+	for (; str[i]; i++)
+	{
+		if (str[i] < '0' || str[i] > '9')
+			return (-1);
+		else
+			num = num * 10 + str[i] - 48;
+		if (num > 999)
+			return (-1);
+	}
+	return (num);
+}
+
+void	test_arm(node *tree, int mod_step, int mod_print)
+{
+	int		mod = 0, num = -1;
+	string	str_mod;
+
+	clear();
+
+	while (42)
+	{
+		if (mod == 0)
+			cout << "Введите элемент для вставки: ";
+		else
+			cout << "Введите элемент для удаления: ";
+		if (!getline(cin, str_mod))
+		{
+			cout << "Error\n";
+			exit (1);
+		}
+		if (str_mod == "add")
+			mod = 0;
+		else if (str_mod == "rem")
+			mod = 1;
+		else
+		{
+			if ((num = parcer_num(str_mod)) == -1)
+				cout << "Число введено неверно\n";
+			else
+			{
+				clear();
+				if (mod_step)
+				{
+					cout << "============================================================ДО============================================================" << endl;
+					print_tree(tree, mod_print);
+					cout << "===========================================================ПОСЛЕ==========================================================" << endl;
+				}
+				if (mod == 0)
+					tree = insert(tree, num, tree);
+				else
+					tree = remove(tree, num);
+				print_tree(tree, mod_print);
+			}
+		}
+	}
+}
+
+// Копирвоание дерева
 node*	copy(node* tree)
 {
 	if (tree == NULL)
@@ -223,7 +298,62 @@ node*	copy(node* tree)
 
 int	main ()
 {
-	test_cycle();
+	node	*tree = NULL;
+	string	str_mod;
+
+	cout
+	<< "Запустите один из следующих режимов" << endl
+	<< "1 - Добавление и удаление случайных элементов автоматически" << endl
+	<< "2 - Добавление и удаление случайных элементов автоматически (после любого ввода)" << endl
+	<< "3 - Ручное управление, введите \"add\", что бы перейти в режим добавления элементов или \"rem\" для режима удаления" << endl
+	<< "1+, 2+, 3+ - Печатается дерево до действий над ним, потом после" << endl
+	<< "1h, 2h, 3h - Под значением узла дерева выводится значение его родителя" << endl
+	<< "1p, 2p, 3p - Под значением узла дерева выводится глубина узла" << endl
+	<< "1+p, 2+p, 3+p, 1+h, 2+h, 3+h - Комбинированные режимы" << endl;
+	
+	if (!getline(cin, str_mod))
+	{
+		cout << "Error\n";
+		exit (1);
+	}
+	if (str_mod == "1")
+		test_automatically(tree, 0, 0, 0);
+	else if (str_mod == "1+")
+		test_automatically(tree, 0, 1, 0);
+	else if (str_mod == "1h")
+		test_automatically(tree, 0, 0, 1);
+	else if (str_mod == "1p")
+		test_automatically(tree, 0, 0, 2);
+	else if (str_mod == "1+h")
+		test_automatically(tree, 0, 1, 1);
+	else if (str_mod == "1+p")
+		test_automatically(tree, 0, 1, 2);
+	if (str_mod == "2")
+		test_automatically(tree, 1, 0, 0);
+	else if (str_mod == "2+")
+		test_automatically(tree, 1, 1, 0);
+	else if (str_mod == "2h")
+		test_automatically(tree, 1, 0, 1);
+	else if (str_mod == "2p")
+		test_automatically(tree, 1, 0, 2);
+	else if (str_mod == "2+h")
+		test_automatically(tree, 1, 1, 1);
+	else if (str_mod == "2+p")
+		test_automatically(tree, 1, 1, 2);
+	else if (str_mod == "3")
+		test_arm(tree, 0, 0);
+	else if (str_mod == "3+")
+		test_arm(tree, 1, 0);
+	else if (str_mod == "3h")
+		test_arm(tree, 0, 1);
+	else if (str_mod == "3p")
+		test_arm(tree, 0, 2);
+	else if (str_mod == "3+h")
+		test_arm(tree, 1, 1);
+	else if (str_mod == "3+p")
+		test_arm(tree, 1, 2);
+	else
+		cout << "Неверный ввод\n";
 
 	return (0);
 }

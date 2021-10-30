@@ -9,6 +9,8 @@ std::string print_num(int num, char ch)
 {
 	std::string temp = "";
 
+	if (ch == 'n')
+		return ("nul");
 	if (num < 0 || num > 999)
 		temp += "???";
 	else
@@ -40,7 +42,7 @@ void fill_depth(node *tree, std::string *lev_tree, std::string *lev_tree_height,
 	if (mod_h == 1)
 		height_str = print_num(tree->height, '.');
 	else if (mod_h == 2)
-		height_str = print_num(tree->parent ? tree->parent->info : 0, '.');
+		height_str = print_num(tree->parent ? tree->parent->info : 0, tree->parent ? '.' : 'n');
 	
 	lev_tree[lev].replace(mod, 3, num_str);
 	if (mod_h)
