@@ -14,6 +14,7 @@ Start:  bash tree.sh
 1p, 2p, 3p - Под значением узла дерева выводится глубина узла (минимальная глубина = 1)<br/>
 1+p, 2+p, 3+p, 1+h, 2+h, 3+h - Комбинированные режимы<br/>
 control + c - выход<br/>
+
 <img width="275" alt="Screen Shot 2021-10-30 at 9 40 28 PM" src="https://user-images.githubusercontent.com/70471514/139555062-51a0d38a-9d9a-4c3b-963c-e5ee8669c069.png"><br/>
 <img width="446" alt="Screen Shot 2021-10-30 at 9 38 47 PM" src="https://user-images.githubusercontent.com/70471514/139555050-816c073f-c8aa-47f8-8d4b-34eb48976327.png"><br/>
 <img width="1061" alt="Screen Shot 2021-10-30 at 9 41 57 PM" src="https://user-images.githubusercontent.com/70471514/139555065-dd79509d-8319-4659-8364-67423be61b5c.png"><br/>
